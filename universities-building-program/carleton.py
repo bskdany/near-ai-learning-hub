@@ -19,7 +19,7 @@
 import requests
 from nearai.agents.environment import Environment
 
-URL = "https://api.breakingbadquotes.xyz/v1/quotes"
+URL = "http://api.quotable.io/random"
 
 def handle_message(message: str) -> str:
     message = message.lower()
@@ -29,8 +29,8 @@ def handle_message(message: str) -> str:
         result = requests.get(URL) 
         if result.status_code == 200:
             data = result.json()
-            quote = data[0]['quote']
-            author = data[0]['author']
+            quote = data['quote']
+            author = data['author']
             return f"{quote} - {author}"
         else:
             return "Sorry, I couldn't fetch a quote at the moment."
