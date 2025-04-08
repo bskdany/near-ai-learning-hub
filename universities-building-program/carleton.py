@@ -17,23 +17,31 @@
 # ============================================================
 
 import requests
+from nearai.agents.environment import Environment
+
+URL = "https://api.breakingbadquotes.xyz/v1/quotes"
 
 def handle_message(message: str) -> str:
     message = message.lower()
     if "hello" in message:
         return "Hello, welcome to NEAR AI!"
     elif "quote" in message:
-        # TODO: Implement the quote command.
-        # Steps:
-        #   1. Use requests.get() to call the quote API.
-        #   2. Check if the response is OK (status code 200).
-        #   3. Parse the JSON response to retrieve the "content" and "author".
-        #   4. Return a formatted string with the quote and its author.
-        pass
+        result = requests.get(URL) 
+        if result.status_code == 200:
+            data = result.json()
+            quote = data[0]['quote']
+            author = data[0]['author']
+            return f"{quote} - {author}"
+        else:
+            return "Sorry, I couldn't fetch a quote at the moment."
     else:
         return "I'm sorry, I didn't understand your message."
 
-# Optional testing block:
-# if __name__ == "__main__":
-#    user_input = input("Enter a message for the agent: ")
-#    print(handle_message(user_input))
+def run(env: Environment):
+    # Your agent code here
+    prompt = {"role": "system", "content": ""}
+    result = env.completion([prompt] + env.list_messages())
+    env.add_reply(handle_message(result))
+    env.request_user_input()
+    
+run(env)
